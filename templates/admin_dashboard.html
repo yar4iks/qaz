@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% set title = "Админ-панель" %}
+
+{% block content %}
+<div class="toolbar">
+  <form method="post" action="/admin/logout">
+    <button type="submit" class="secondary">Выйти</button>
+  </form>
+</div>
+
+<section class="card">
+  <h2>Создать приглашение</h2>
+  <form method="post" action="/admin/invites" class="grid">
+    <label>
+      Комментарий
+      <input type="text" name="note" required />
+    </label>
+    <label>
+      Кампания
+      <input type="text" name="campaign" required />
+    </label>
+    <label>
+      Истекает (ISO, опционально)
+      <input type="text" name="expires_at" placeholder="2024-12-31T18:00:00" />
+    </label>
+    <label>
+      Максимум использований (опционально)
+      <input type="number" name="max_uses" min="1" />
+    </label>
+    <button type="submit">Создать</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Приглашения</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Создано</th>
+          <th>Комментарий</th>
+          <th>Кампания</th>
+          <th>Ссылка</th>
+          <th>Всего посещений</th>
+          <th>Уникальные посещения</th>
+          <th>Статус</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in invite_stats %}
+        <tr>
+          <td>{{ item.invite.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+          <td>{{ item.invite.note }}</td>
+          <td>{{ item.invite.campaign }}</td>
+          <td>
+            <code>{{ request.base_url }}t/{{ item.invite.token }}</code>
+          </td>
+          <td>{{ item.total_visits }}</td>
+          <td>{{ item.unique_visits }}</td>
+          <td>{{ item.status }}</td>
+          <td>
+            {% if item.status == "active" %}
+              <form method="post" action="/admin/invites/{{ item.invite.id }}/disable">
+                <button type="submit" class="secondary">Деактивировать</button>
+              </form>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8" class="muted">Приглашений пока нет.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Последние посещения</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Время</th>
+          <th>Токен</th>
+          <th>IP</th>
+          <th>User-Agent</th>
+          <th>Результат</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+        <tr>
+          <td>{{ event.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+          <td><code>{{ event.token }}</code></td>
+          <td>{{ event.ip }}</td>
+          <td class="ua">{{ event.user_agent }}</td>
+          <td>{{ event.result }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="muted">Событий пока нет.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
