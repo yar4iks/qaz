@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+    <div class="card-header">
+        <h2>Создать приглашение</h2>
+        <form method="post" action="/admin/logout">
+            <button class="secondary" type="submit">Выйти</button>
+        </form>
+    </div>
+    <form method="post" action="/admin/invites" class="grid">
+        <label>Комментарий
+            <input type="text" name="note" required />
+        </label>
+        <label>Кампания
+            <input type="text" name="campaign" required />
+        </label>
+        <label>Истекает (ISO 8601)
+            <input type="datetime-local" name="expires_at" />
+        </label>
+        <label>Макс. использований
+            <input type="number" min="1" name="max_uses" />
+        </label>
+        <button type="submit">Создать</button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Приглашения</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Создано</th>
+                <th>Комментарий</th>
+                <th>Кампания</th>
+                <th>Ссылка</th>
+                <th>Всего</th>
+                <th>Уникальных</th>
+                <th>Статус</th>
+                <th>Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in invites %}
+            <tr>
+                <td>{{ row.invite.created_at }}</td>
+                <td>{{ row.invite.note }}</td>
+                <td>{{ row.invite.campaign }}</td>
+                <td><a href="/t/{{ row.invite.token }}" target="_blank">/t/{{ row.invite.token }}</a></td>
+                <td>{{ row.total_visits }}</td>
+                <td>{{ row.unique_visits }}</td>
+                <td>{{ row.status }}</td>
+                <td>
+                    {% if row.status == "active" %}
+                    <form method="post" action="/admin/invites/{{ row.invite.id }}/disable">
+                        <button type="submit" class="secondary">Деактивировать</button>
+                    </form>
+                    {% else %}
+                    —
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">Пока нет приглашений.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section class="card">
+    <h2>Последние посещения</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Время</th>
+                <th>Токен</th>
+                <th>IP</th>
+                <th>User-Agent</th>
+                <th>Результат</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for visit in visits %}
+            <tr>
+                <td>{{ visit.created_at }}</td>
+                <td>{{ visit.token }}</td>
+                <td>{{ visit.ip }}</td>
+                <td class="ua">{{ visit.user_agent }}</td>
+                <td>{{ visit.result }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">Пока нет посещений.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
