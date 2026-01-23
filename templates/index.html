@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>Hello</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #f7f7f7;
+      }
+      .card {
+        background: #fff;
+        padding: 2rem 3rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Hello, guest {{ ip_address }}</h1>
+    </div>
+  </body>
+</html>
