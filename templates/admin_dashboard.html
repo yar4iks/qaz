@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>Админ панель</title>
+  </head>
+  <body>
+    <h1>Админ панель</h1>
+    <p><a href="{{ url_for('admin_logout') }}">Выйти</a></p>
+
+    <section>
+      <h2>Генерация ссылок</h2>
+      <form method="post" action="{{ url_for('create_link') }}">
+        <button type="submit">Создать ссылку</button>
+      </form>
+      <ul>
+        {% for link in links %}
+          <li>
+            <a href="{{ url_for('link_redirect', token=link['token'], _external=true) }}">
+              {{ url_for('link_redirect', token=link['token'], _external=true) }}
+            </a>
+            ({{ link['created_at'] }})
+          </li>
+        {% else %}
+          <li>Ссылок пока нет.</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section>
+      <h2>Посетители</h2>
+      <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+          <tr>
+            <th>IP</th>
+            <th>Дата</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for visitor in visitors %}
+            <tr>
+              <td>{{ visitor['ip_address'] }}</td>
+              <td>{{ visitor['visited_at'] }}</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="2">Посетителей пока нет.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </body>
+</html>
